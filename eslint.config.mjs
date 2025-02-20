@@ -13,12 +13,12 @@ export default [
   ...tseslint.configs.recommended,
   js.configs.recommended,
   {
-    ignores: ["**/*.{mjs,js}",],
+    ignores: ["**/*.{js}"],
     rules: {
       // Estilo de código
-      "quotes": ["error", "double"],
-      "semi": ["error", "always"],
-      "indent": ["error", 2],
+      quotes: ["error", "double"],
+      semi: ["error", "always"],
+      indent: ["error", 2],
       "max-len": ["error", { code: 120 }],
       "linebreak-style": ["error", "unix"],
       "no-trailing-spaces": "error",
@@ -26,11 +26,10 @@ export default [
 
       // Consola
       "no-console": "warn",
-      "no-unused-vars": "error",
+      "no-unused-vars": ["error"],
       "no-debugger": "error",
       "no-undef": "error",
       "consistent-return": "error",
-
 
       // TypeScript
       // '@typescript-eslint/no-unused-vars': 'error',
@@ -38,6 +37,6 @@ export default [
       // '@typescript-eslint/no-unsafe-assignment': 'error',
       // '@typescript-eslint/no-unsafe-member-access': 'error',
       // '@typescript-eslint/no-unsafe-call': 'error',
-    }
-  }
+    },
+  },
 ];
