@@ -1,0 +1,7 @@
+{
+    "functions/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+  
