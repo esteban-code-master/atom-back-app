@@ -1,4 +1,5 @@
 import { authModule } from "@module/auth/auth.module";
+import { taskModule } from "@module/task/task.module";
 import { userModule } from "@module/user/user.module";
 import { FirestoreService } from "@shared/interface/firestore.service";
 import { FirebaseAdminService } from "@shared/service/firebase-admin.service";
@@ -11,5 +12,6 @@ container.bind<FirestoreService>(FirestoreService).to(FirestoreServiceImpl).inSi
 
 container.load(authModule);
 container.load(userModule);
+container.load(taskModule);
 
 export { container };
