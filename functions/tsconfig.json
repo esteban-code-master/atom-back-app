@@ -5,7 +5,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,    
+    "emitDecoratorMetadata": true,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
@@ -16,7 +16,8 @@
       "@config/*": ["./src/config/*"]
     },
     "baseUrl": "./",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": ["./src/shared/types/index.d.ts"]
   },
   "compileOnSave": true,
   "include": ["src/**/*.ts"],
