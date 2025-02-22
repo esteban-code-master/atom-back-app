@@ -27,6 +27,7 @@ jobs:
       - name: 🔑 Authenticate with Firebase
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/firebase_service_account.json
+          echo "FIREBASE_CREDENTIALS_SON=$HOME/firebase_service_account.json" >> $GITHUB_ENV
           export GOOGLE_APPLICATION_CREDENTIALS="$HOME/firebase_service_account.json"
 
       - name: 📦 Install Dependencies

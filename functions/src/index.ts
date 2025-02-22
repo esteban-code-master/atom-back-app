@@ -13,6 +13,10 @@ import express from "express";
 import { InversifyExpressServer } from "inversify-express-utils";
 import { container } from "@config/inversify.config";
 import { errorHandlingMiddleware } from "@shared/middleware/error-handling-middleware";
+// import * as dotenv from "dotenv";
+// import path from "path";
+
+// dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const server = new InversifyExpressServer(container);
 
