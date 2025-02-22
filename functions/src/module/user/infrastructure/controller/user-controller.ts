@@ -18,9 +18,9 @@ export class UserController {
   @httpPost("/", validateRequestBody(userCreateSchema))
   public async post(@requestBody() body: User, @response() res: Response, @next() next: NextFunction): Promise<void> {
     try {
-      const task = await this.createUserUseCase.execute(body.email);
+      const user = await this.createUserUseCase.execute(body.email);
 
-      res.status(StatusCodes.CREATED).json(task);
+      res.status(StatusCodes.CREATED).json(user);
     } catch (error) {
       next(error);
     }
@@ -33,9 +33,9 @@ export class UserController {
     @next() next: NextFunction,
   ): Promise<void> {
     try {
-      const task = await this.findByEmailUserUseCase.execute(email);
+      const user = await this.findByEmailUserUseCase.execute(email);
 
-      res.status(StatusCodes.OK).json(task);
+      res.status(StatusCodes.OK).json(user);
     } catch (error) {
       next(error);
     }

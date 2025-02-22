@@ -8,19 +8,11 @@ export class AuthRepositoryImpl implements AuthRepository {
   constructor(@inject(FirebaseAdminService) private readonly firebaseAdmin: FirebaseAdminService) {}
 
   public async register(email: string): Promise<UserRecord> {
-    try {
-      const user = await this.firebaseAdmin.app.auth().createUser({
-        email: email,
-      });
+    const user = await this.firebaseAdmin.app.auth().createUser({
+      email: email,
+    });
 
-      return user;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`Error creating user: ${error.message}`);
-      }
-
-      throw new Error("Unknown error occurred while creating user");
-    }
+    return user;
   }
 
   public async findByEmail(email: string): Promise<UserRecord | void> {
@@ -28,7 +20,10 @@ export class AuthRepositoryImpl implements AuthRepository {
       const user = await this.firebaseAdmin.app.auth().getUser(email);
       return user;
     } catch (error: unknown) {
-      if (error instanceof Error) return undefined;
+      if (error instanceof Error) {
+        //
+      }
+      return undefined;
     }
   }
 

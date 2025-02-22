@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
+import { FirebaseConfigService } from "./firebase-config.service";
 
 @injectable()
 export class FirebaseAdminService {
@@ -7,9 +8,11 @@ export class FirebaseAdminService {
 
   public app: admin.app.App;
 
-  constructor() {
+  constructor(@inject(FirebaseConfigService) private readonly firebaseConfigService: FirebaseConfigService) {
     if (!FirebaseAdminService.instance) {
-      admin.initializeApp();
+      admin.initializeApp({
+        credential: admin.credential.cert(this.firebaseConfigService.getCredentials()),
+      });
 
       FirebaseAdminService.instance = admin.app();
     }

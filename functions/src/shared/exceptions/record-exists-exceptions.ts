@@ -1,8 +1,12 @@
 import { StatusCodes } from "http-status-codes";
-import { BaseException } from "./base-exceptions";
+// import { BaseException } from "./base-exceptions";
 
-export class RecordExistsExceptions extends BaseException {
-  constructor(message = "Record Exists") {
-    super(message, StatusCodes.CONFLICT, "RecordExistsException");
+export class RecordExistsExceptions extends Error {
+  public status: number;
+
+  constructor(message: string) {
+    super(message);
+    this.name = "RecordExistsExceptions";
+    this.status = StatusCodes.CONFLICT;
   }
 }
