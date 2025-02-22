@@ -1,21 +1,25 @@
-import { HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
+import { BaseException } from "@shared/exceptions/base-exceptions";
 
-export const errorHandlingMiddleware = (error: Error | HttpsError, req: Request, res: Response) => {
-  if (error instanceof HttpsError) {
+export const errorHandlingMiddleware = (
+  error: Error | BaseException,
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+) => {
+  if (error instanceof BaseException) {
     logger.error(`An error occurred in the route: ${req.originalUrl}`, error);
 
-    return res.status(Number(error.code) || StatusCodes.INTERNAL_SERVER_ERROR).send({
+    return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).json({
       message: error.message,
-      details: error.details || "No details available",
     });
   }
 
   logger.error(`Unexpected error in route: ${req.originalUrl}`, error);
 
-  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     message: "Internal server error",
     details: error.message || "No details available",
   });
