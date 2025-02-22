@@ -6,7 +6,7 @@ import { AuthRepository } from "@module/auth/domain/repositories/auth.repository
 export class FindByEmailUserUseCase {
   constructor(@inject(AuthRepository) private authRepository: AuthRepository) {}
 
-  async execute(email: string): Promise<UserRecord | undefined> {
+  async execute(email: string): Promise<UserRecord | void> {
     return await this.authRepository.findByEmail(email);
   }
 }
