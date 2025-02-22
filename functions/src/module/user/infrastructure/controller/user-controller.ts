@@ -1,13 +1,43 @@
-import { controller, httpGet, response } from "inversify-express-utils";
-import { Response } from "express";
+import { controller, httpGet, httpPost, next, queryParam, requestBody, response } from "inversify-express-utils";
+import { NextFunction, Response } from "express";
+import { CreateUserUseCase } from "@module/user/application/use-case/create-user.use-case";
+import { FindByEmailUserUseCase } from "@module/user/application/use-case/fin-by-email.use-case";
+import { validateRequestBody } from "@shared/middleware/validate.schema";
+import { userCreateSchema, userQueryParamsSchema } from "@module/user/infrastructure/schema/user.schema";
 import { StatusCodes } from "http-status-codes";
+import { validateRequestQuery } from "@shared/middleware/validate-query.schema";
+import { User } from "@module/user/domain/model/user.model";
 
-@controller("/user")
+@controller("/users")
 export class UserController {
-  constructor() {}
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly findByEmailUserUseCase: FindByEmailUserUseCase,
+  ) {}
 
-  @httpGet("/")
-  public async get(@response() res: Response) {
-    res.status(StatusCodes.OK).json({ hola: "hello !!" });
+  @httpPost("/", validateRequestBody(userCreateSchema))
+  public async post(@requestBody() body: User, @response() res: Response, @next() next: NextFunction): Promise<void> {
+    try {
+      const task = await this.createUserUseCase.execute(body.email);
+
+      res.status(StatusCodes.CREATED).json(task);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @httpGet("/", validateRequestQuery(userQueryParamsSchema))
+  public async getById(
+    @response() res: Response,
+    @queryParam("email") email: string,
+    @next() next: NextFunction,
+  ): Promise<void> {
+    try {
+      const task = await this.findByEmailUserUseCase.execute(email);
+
+      res.status(StatusCodes.OK).json(task);
+    } catch (error) {
+      next(error);
+    }
   }
 }
