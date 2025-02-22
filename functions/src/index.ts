@@ -9,23 +9,22 @@
 
 import "reflect-metadata";
 import { onRequest } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
 import express from "express";
 import { InversifyExpressServer } from "inversify-express-utils";
 import { container } from "@config/inversify.config";
 import { errorHandlingMiddleware } from "@shared/middleware/error-handling-middleware";
-
-admin.initializeApp();
 
 const server = new InversifyExpressServer(container);
 
 server.setConfig((app) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+});
 
+server.setErrorConfig((app) => {
   app.use(errorHandlingMiddleware);
 });
 
 const app = server.build();
 
-export const apiv2 = onRequest(app);
+export const apiV2 = onRequest(app);
