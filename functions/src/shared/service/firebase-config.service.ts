@@ -1,16 +1,13 @@
-import * as fs from "fs";
+import { config } from "@shared/config";
 import { injectable } from "inversify";
 
 @injectable()
 export class FirebaseConfigService {
   public getCredentials(): string {
-    const credentialsPath = "../credential.json";
+    const decodedString = Buffer.from(config, "base64").toString("utf-8");
 
-    if (!fs.existsSync(credentialsPath)) {
-      throw new Error(`Credentials file does not exist at path: ${credentialsPath}`);
-    }
-
-    const fileContent = fs.readFileSync(credentialsPath, "utf-8");
-    return JSON.parse(fileContent);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const jsonObject = JSON.parse(decodedString);
+    return jsonObject;
   }
 }
