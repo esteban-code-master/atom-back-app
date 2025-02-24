@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 import { inject, injectable } from "inversify";
 import { FirebaseConfigService } from "./firebase-config.service";
-
 @injectable()
 export class FirebaseAdminService {
   private static instance: admin.app.App | null = null;
@@ -11,6 +10,7 @@ export class FirebaseAdminService {
   constructor(@inject(FirebaseConfigService) private readonly firebaseConfigService: FirebaseConfigService) {
     if (!FirebaseAdminService.instance) {
       admin.initializeApp({
+        projectId: "atom-back-app",
         credential: admin.credential.cert(this.firebaseConfigService.getCredentials()),
       });
 
