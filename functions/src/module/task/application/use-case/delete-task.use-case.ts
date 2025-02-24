@@ -12,5 +12,7 @@ export class DeleteTaskUseCase {
     if (!taskFound) {
       throw new NotFoundException(`Task with ID ${taskId} not found`);
     }
+
+    await this.taskRepository.delete(taskId);
   }
 }

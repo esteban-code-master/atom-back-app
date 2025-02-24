@@ -1,5 +1,5 @@
-// import { container } from "@config/inversify.config";
-// import { AuthRepository } from "@module/auth/domain/repositories/auth.repository";
+import { container } from "@config/inversify.config";
+import { AuthRepository } from "@module/auth/domain/repositories/auth.repository";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { injectable } from "inversify";
@@ -14,10 +14,10 @@ export class FirebaseAuthGuard {
     }
 
     try {
-      // const authRepository = container.get<AuthRepository>(AuthRepository);
+      const authRepository = container.get<AuthRepository>(AuthRepository);
 
-      // const decodedToken = await authRepository.verifyToken(token);
-      // req.user = decodedToken;
+      const decodedToken = await authRepository.verifyToken(token);
+      req.user = decodedToken;
 
       next();
     } catch (error) {
