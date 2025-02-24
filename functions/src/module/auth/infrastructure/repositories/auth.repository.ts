@@ -17,7 +17,7 @@ export class AuthRepositoryImpl implements AuthRepository {
 
   public async findByEmail(email: string): Promise<UserRecord | void> {
     try {
-      const user = await this.firebaseAdmin.app.auth().getUser(email);
+      const user = await this.firebaseAdmin.app.auth().getUserByEmail(email);
       return user;
     } catch (error: unknown) {
       if (error instanceof Error) {
