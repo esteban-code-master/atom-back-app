@@ -5,6 +5,8 @@ import { FirestoreService } from "@shared/interface/firestore.service";
 import { TaskRepository } from "@module/task/domain/repository/task.repository";
 import { taskConverter } from "@module/task/infrastructure/mappers/firestore-data-converter";
 import { WriteResult } from "firebase-admin/firestore";
+import { FilterTaskDto } from "@module/task/application/dto/filter-task.dto";
+import { PAGINATION_DEFAULT } from "@module/user/infrastructure/const/constants";
 
 @injectable()
 export class TaskRepositoryImpl implements TaskRepository {
@@ -22,11 +24,34 @@ export class TaskRepositoryImpl implements TaskRepository {
     return task;
   }
 
-  async find(): Promise<Task[]> {
-    const result = await this.collection.withConverter(taskConverter).get();
-    if (result.empty) return [];
+  async find(filter: FilterTaskDto): Promise<[Task[], string | null]> {
+    const { userId, pageSize = PAGINATION_DEFAULT, lastVisibleId, search } = filter;
 
-    return result.docs.map((doc) => doc.data());
+    let query = this.collection
+      .withConverter(taskConverter)
+      .where("userId", "==", userId)
+      .orderBy("createAt")
+      .limit(pageSize);
+
+    if (search) {
+      query = query.where("title", ">=", search).where("title", "<=", search + "\uf8ff");
+    }
+
+    if (lastVisibleId) {
+      const lastVisibleDoc = await this.collection.doc(lastVisibleId).get();
+
+      if (!lastVisibleDoc.exists) {
+        return [[], null];
+      }
+
+      query = query.startAfter(lastVisibleDoc);
+    }
+
+    const snapshot = await query.get();
+    const tasks = snapshot.docs.map((doc) => doc.data());
+    const lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+    return [tasks, lastVisible?.id];
   }
 
   async findById(id: string): Promise<Task | null> {
@@ -34,6 +59,20 @@ export class TaskRepositoryImpl implements TaskRepository {
     const doc = await docRef.get();
 
     return doc.data() ?? null;
+  }
+
+  async count(filter: FilterTaskDto): Promise<number> {
+    const { userId, search } = filter;
+
+    let query = this.collection.withConverter(taskConverter).where("userId", "==", userId).orderBy("createAt");
+
+    if (search) {
+      query = query.where("title", ">=", search).where("title", "<=", search + "\uf8ff");
+    }
+
+    const data = await query.count().get();
+
+    return data.data().count;
   }
 
   async update(taskId: string, task: Task): Promise<WriteResult> {

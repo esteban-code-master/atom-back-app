@@ -5,9 +5,9 @@ import { FindByIdTaskUseCase } from "@module/task/application/use-case/find-by-i
 import { FindTaskUseCase } from "@module/task/application/use-case/find-task.use-case";
 import { UpdateTaskUseCase } from "@module/task/application/use-case/update-task.use-case";
 import { validateRequestBody } from "@shared/middleware/validate.schema";
-import { taskCreateBodySchema, taskParamsSchema, taskUpdateBodySchema } from "../schema/task.schema";
+import { taskCreateBodySchema, taskParamsSchema, taskQuerySchema, taskUpdateBodySchema } from "../schema/task.schema";
 import { validateRequestParams } from "@shared/middleware/validate-params.schema";
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import { Task } from "@module/task/domain/model/task.model";
 import { StatusCodes } from "http-status-codes";
 import {
@@ -17,11 +17,14 @@ import {
   httpPost,
   httpPut,
   next,
+  queryParam,
+  request,
   requestBody,
   requestParam,
   response,
 } from "inversify-express-utils";
 import { FirebaseAuthGuard } from "@module/auth/infrastructure/guard/auth.guard";
+import { FilterTaskDto } from "@module/task/application/dto/filter-task.dto";
 
 @controller("/tasks", FirebaseAuthGuard.prototype.checkToken)
 export class TaskController {
@@ -45,17 +48,28 @@ export class TaskController {
     }
   }
 
-  @httpGet("/")
-  public async get(@response() res: Response, @next() next: NextFunction): Promise<void> {
+  @httpGet("/", validateRequestParams(taskQuerySchema))
+  public async get(
+    @queryParam() filter: FilterTaskDto,
+    @response() res: Response,
+    @request() req: Request,
+    @next() next: NextFunction,
+  ): Promise<void> {
     try {
-      const task = await this.findTaskUseCase.execute();
+      const task = await this.findTaskUseCase.execute({
+        userId: req.user?.uid ?? "",
+        search: filter?.search,
+        lastVisibleId: filter?.lastVisibleId,
+        pageSize: Number(filter?.pageSize),
+      });
+
       res.status(StatusCodes.OK).json(task);
     } catch (error) {
       next(error);
     }
   }
 
-  @httpGet("/:id")
+  @httpGet("/:id", validateRequestParams(taskParamsSchema))
   public async getById(
     @requestParam("id") id: string,
     @response() res: Response,
