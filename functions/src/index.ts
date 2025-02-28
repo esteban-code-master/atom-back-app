@@ -24,7 +24,7 @@ server.setConfig((app) => {
     cors({
       origin: "*",
       methods: ["GET", "POST", "DELETE", "PUT"],
-      allowedHeaders: ["Content-Type"],
+      allowedHeaders: ["Authorization", "Content-Type"],
     }),
   );
 });
