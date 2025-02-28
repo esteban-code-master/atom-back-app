@@ -7,6 +7,16 @@ export class Task {
     public title: string,
     public description: string,
     public createAt: Date | string,
+    public duration: number,
+    public timestampRegister: Date | string,
+    public dateRange: DateRange,
     public status: TaskStatus,
+  ) {}
+}
+
+export class DateRange {
+  constructor(
+    public start: Date | string,
+    public end: Date | string,
   ) {}
 }
