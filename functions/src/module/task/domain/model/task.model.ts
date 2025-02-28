@@ -8,7 +8,7 @@ export class Task {
     public description: string,
     public createAt: Date | string,
     public duration: number,
-    public timestampRegister: Date | string,
+    public timestampRegister: number,
     public dateRange: DateRange,
     public status: TaskStatus,
   ) {}

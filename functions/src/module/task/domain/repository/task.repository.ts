@@ -7,7 +7,7 @@ export interface TaskRepository {
   count(filter: FilterTaskDto): Promise<number>;
   findById(id: string): Promise<Task | null>;
   create(task: Task): Promise<Task>;
-  update(id: string, task: Task): Promise<WriteResult>;
+  update(id: string, task: Partial<Task>): Promise<WriteResult>;
   delete(id: string): Promise<WriteResult>;
 }
 

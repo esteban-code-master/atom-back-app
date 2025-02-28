@@ -1,6 +1,6 @@
 import { Task } from "@module/task/domain/model/task.model";
 import { firestore } from "firebase-admin";
-import { FirestoreDataConverter } from "firebase-admin/firestore";
+import { FirestoreDataConverter, Timestamp } from "firebase-admin/firestore";
 
 export const taskConverter: FirestoreDataConverter<Task> = {
   toFirestore(task: Task): firestore.DocumentData {
@@ -10,6 +10,9 @@ export const taskConverter: FirestoreDataConverter<Task> = {
       description: task.description,
       createAt: task.createAt,
       status: task.status,
+      duration: task.duration,
+      dateRange: task.dateRange,
+      deletedAt: null,
     };
   },
   fromFirestore(snapshot: firestore.QueryDocumentSnapshot): Task {
@@ -17,7 +20,7 @@ export const taskConverter: FirestoreDataConverter<Task> = {
 
     let createAtDate = "";
 
-    if (createAt instanceof firestore.Timestamp) {
+    if (createAt instanceof Timestamp) {
       createAtDate = createAt.toDate().toDateString();
     }
 

@@ -7,6 +7,7 @@ import { FindTaskUseCase } from "@module/task/application/use-case/find-task.use
 import { DeleteTaskUseCase } from "@module/task/application/use-case/delete-task.use-case";
 import { UpdateTaskUseCase } from "@module/task/application/use-case/update-task.use-case";
 import { FindByIdTaskUseCase } from "@module/task/application/use-case/find-by-id-task.use-case";
+import { CompleteTaskUseCase } from "./application/use-case/complete-task.use-case";
 
 export const taskModule: ContainerModule = new ContainerModule((bind) => {
   bind(TaskController).toSelf();
@@ -15,5 +16,6 @@ export const taskModule: ContainerModule = new ContainerModule((bind) => {
   bind(FindByIdTaskUseCase).toSelf();
   bind(DeleteTaskUseCase).toSelf();
   bind(UpdateTaskUseCase).toSelf();
+  bind(CompleteTaskUseCase).toSelf();
   bind<TaskRepository>(TaskRepository).to(TaskRepositoryImpl);
 });

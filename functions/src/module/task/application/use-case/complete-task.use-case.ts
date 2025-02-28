@@ -4,12 +4,13 @@ import { TaskRepository } from "@module/task/domain/repository/task.repository";
 import { NotFoundException } from "@shared/exceptions/not-found-exceptions";
 import { TaskStatus } from "../enum/task.enum";
 import { ConflictRecordExceptions } from "@shared/exceptions/conflict-record";
+import { getMinutesBetweenDates } from "@shared/utils/get-minutes-dates";
 
 @injectable()
-export class UpdateTaskUseCase {
+export class CompleteTaskUseCase {
   constructor(@inject(TaskRepository) private taskRepository: TaskRepository) {}
 
-  async execute(taskId: string, task: Task): Promise<Task> {
+  async execute(taskId: string): Promise<Task> {
     const taskFound = await this.taskRepository.findById(taskId);
 
     if (!taskFound) {
@@ -20,7 +21,12 @@ export class UpdateTaskUseCase {
       throw new ConflictRecordExceptions("Task already completed");
     }
 
-    await this.taskRepository.update(taskId, task);
+    const timestampRegister = getMinutesBetweenDates(new Date(taskFound.dateRange.end), new Date());
+
+    await this.taskRepository.update(taskId, {
+      status: TaskStatus.COMPLETED,
+      timestampRegister,
+    });
 
     return taskFound;
   }

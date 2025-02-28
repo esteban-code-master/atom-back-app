@@ -25,6 +25,7 @@ import {
 } from "inversify-express-utils";
 import { FirebaseAuthGuard } from "@module/auth/infrastructure/guard/auth.guard";
 import { FilterTaskDto } from "@module/task/application/dto/filter-task.dto";
+import { CompleteTaskUseCase } from "@module/task/application/use-case/complete-task.use-case";
 
 @controller("/tasks", FirebaseAuthGuard.prototype.checkToken)
 export class TaskController {
@@ -33,6 +34,7 @@ export class TaskController {
     @inject(FindTaskUseCase) private findTaskUseCase: FindTaskUseCase,
     @inject(DeleteTaskUseCase) private deleteTaskUseCase: DeleteTaskUseCase,
     @inject(UpdateTaskUseCase) private updateTaskUseCase: UpdateTaskUseCase,
+    @inject(CompleteTaskUseCase) private completeTaskUseCase: CompleteTaskUseCase,
     @inject(FindByIdTaskUseCase)
     private findByIdTaskUseCase: FindByIdTaskUseCase,
   ) {}
@@ -108,6 +110,20 @@ export class TaskController {
   ): Promise<void> {
     try {
       const task = await this.updateTaskUseCase.execute(id, body);
+      res.status(StatusCodes.OK).json(task);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @httpPut("/complete/:id")
+  public async patch(
+    @requestParam("id") id: string,
+    @response() res: Response,
+    @next() next: NextFunction,
+  ): Promise<void> {
+    try {
+      const task = await this.completeTaskUseCase.execute(id);
       res.status(StatusCodes.OK).json(task);
     } catch (error) {
       next(error);

@@ -4,7 +4,7 @@ import { Task } from "@module/task/domain/model/task.model";
 import { FirestoreService } from "@shared/interface/firestore.service";
 import { TaskRepository } from "@module/task/domain/repository/task.repository";
 import { taskConverter } from "@module/task/infrastructure/mappers/firestore-data-converter";
-import { WriteResult } from "firebase-admin/firestore";
+import { Timestamp, WriteResult } from "firebase-admin/firestore";
 import { FilterTaskDto } from "@module/task/application/dto/filter-task.dto";
 import { PAGINATION_DEFAULT } from "@module/user/infrastructure/const/constants";
 
@@ -30,6 +30,7 @@ export class TaskRepositoryImpl implements TaskRepository {
     let query = this.collection
       .withConverter(taskConverter)
       .where("userId", "==", userId)
+      .where("deletedAt", "==", null)
       .orderBy("createAt")
       .limit(pageSize);
 
@@ -85,6 +86,8 @@ export class TaskRepositoryImpl implements TaskRepository {
   }
 
   async delete(id: string): Promise<WriteResult> {
-    return this.collection.doc(id).delete();
+    return await this.collection.doc(id).update({
+      deletedAt: Timestamp.now(),
+    });
   }
 }
