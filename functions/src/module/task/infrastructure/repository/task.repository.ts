@@ -48,7 +48,11 @@ export class TaskRepositoryImpl implements TaskRepository {
     }
 
     const snapshot = await query.get();
-    const tasks = snapshot.docs.map((doc) => doc.data());
+    const tasks = snapshot.docs.map((doc) => ({
+      ...doc.data(),
+      createAt: doc.data().createAt.toString(),
+    }));
+
     const lastVisible = snapshot.docs[snapshot.docs.length - 1];
 
     return [tasks, lastVisible?.id];

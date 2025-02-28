@@ -1,5 +1,4 @@
 import { TaskStatus } from "@module/task/domain/types/task-status";
-import { Timestamp } from "firebase-admin/firestore";
 
 export class Task {
   constructor(
@@ -7,7 +6,7 @@ export class Task {
     public userId: string,
     public title: string,
     public description: string,
-    public createAt: Timestamp,
+    public createAt: Date | string,
     public status: TaskStatus,
   ) {}
 }
