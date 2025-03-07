@@ -60,6 +60,62 @@ Integración Continua
 
 Este proyecto cuenta con un archivo de configuración .github/workflows/node.js.yml para realizar despliegues continuos utilizando GitHub Actions.
 
+### Configuración del CI/CD con GitHub Actions
+El siguiente archivo de configuración permite el despliegue automático de Firebase Functions cuando se cierra un _pull request_ en la rama `main`:
+
+```yaml
+name: Deploy Atom task api
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Firebase Functions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 🚀 Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: 🔑 Authenticate with Firebase
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/firebase_service_account.json
+          echo "FIREBASE_CREDENTIALS_SON=$HOME/firebase_service_account.json" >> $GITHUB_ENV
+          export GOOGLE_APPLICATION_CREDENTIALS="$HOME/firebase_service_account.json"
+
+      - name: 📦 Install Dependencies
+        run: |
+          cd functions
+          npm install
+
+      - name: 🛠️ Build TypeScript files
+        run: |
+          cd functions
+          npm run build
+
+      - name: 🚀 Deploy to Firebase
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="$HOME/firebase_service_account.json"
+          firebase deploy --only functions --project ${{ vars.FIREBASE_PROJECT_ID }}
+
+      - name: 🧹 Clean Up Credentials
+        if: always()
+        run: rm -f $HOME/firebase_service_account.json
+```
+
 ## Estructura del proyecto - usando principios solid y arquitectura limpia
 
 ```
